@@ -1,12 +1,16 @@
 {
   "name": "shokokaigisho-scrape",
-  "version": "1.0.0",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "repository": "git@github.com:weed/shokokaigisho-scrape_p141022.git",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "$(npm bin)/webdriver-manager update",
+    "scrape-mufg": "$(npm bin)/protractor --specs mufg.js"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "protractor": "^1.3.0"
+  }
 }
