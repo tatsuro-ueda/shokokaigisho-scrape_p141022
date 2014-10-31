@@ -32,23 +32,22 @@ exports.config = {
 */
 
 exports.config = {
-  allScriptsTimeout: 11000,
-
-  specs: [
-    '*.js'
-  ],
-
-  capabilities: {
-    'browserName': 'chrome'
-  },
-
-  chromeOnly: true,
-
-  baseUrl: 'http://localhost:8000/',
-
-  framework: 'jasmine',
+  seleniumAddress: 'http://localhost:4444/wd/hub',
+  specs: ['spec.js'],
 
   jasmineNodeOpts: {
-    defaultTimeoutInterval: 30000
+    isVerbose: true,
+    showColors: true,
+    defaultTimeoutInterval: 30000,
+    includeStackTrace: false
+  },
+
+  onPrepare: function () {
+    jasmine.getEnv().afterEach(function () {
+      var spec = jasmine.getEnv().currentSpec;
+      if (spec.results().failedCount > 0) {
+        browser.pause();
+      }
+    });
   }
 };
