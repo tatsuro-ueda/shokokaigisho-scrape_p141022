@@ -2,46 +2,74 @@
  * Created by weed on 2014/10/22.
  */
 
+/**
+ * ファイルシステムモジュール
+ * @type {exports}
+ */
 var fs = require( 'fs' );
-var outFilePath = 'tmp.tsv';
-fs.unlink(outFilePath);
 
-describe( 'shokokaigisho', function () {
+/**
+ * 出力ファイル
+ * @type {string}
+ */
+var out_file_path = 'tmp.csv';
+
+fs.unlink(out_file_path);
+
+describe( '情報取得開始', function () {
+
+  // AngularJSを使っていないサイトでProtractorを使用する
   browser.ignoreSynchronization = true;
+
+  // 商工会議所の事業所検索ページに行く
   browser.get( 'http://meikan.yokkaichi-cci.or.jp/index.html' );
 
-  var categoryHash = {
-    "農林水産業": { "p.f6_index": 8, "input_name": "g1" },
-    "建設業": { "p.f6_index": 10, "input_name": "g3" },
-    "製造業": { "p.f6_index": 11, "input_name": "g4" },
-    "卸売業": { "p.f6_index": 12, "input_name": "g5" },
-    "小売業": { "p.f6_index": 13, "input_name": "g6" },
-    "金融保険業": { "p.f6_index": 14, "input_name": "g7" },
-    "不動産業": { "p.f6_index": 15, "input_name": "g8" },
-    "運輸通信業": { "p.f6_index": 16, "input_name": "g9" },
-    "サービス業": { "p.f6_index": 17, "input_name": "g10" },
-    "電気・ガス・水道・熱供給業": { "p.f6_index": 18, "input_name": "g11" },
-    "学校・団体": { "p.f6_index": 19, "input_name": "g12" }
-  };
-  $('input[name=' + categoryHash['金融保険業']['input_name'] + ']').click();
+    /**
+     * 業種リスト
+     * p.f6_index: 検索画面の該当業種の業種名を取得するための番号
+     * input_name: 検索画面の該当業種のチェックボックスの
+     * @type {*[]}
+     */
+    var gyoshu_info = [
+    {"p.f6_index": 8, "input_name": "g1" }, // 農林水産業
+    {"p.f6_index": 10, "input_name": "g3" }, // 建設業
+    {"p.f6_index": 11, "input_name": "g4" }, // 製造業
+    {"p.f6_index": 12, "input_name": "g5" }, // 卸売業
+    {"p.f6_index": 13, "input_name": "g6" }, // 小売業
+    {"p.f6_index": 14, "input_name": "g7" }, // 金融保険業
+    {"p.f6_index": 15, "input_name": "g8" }, // 不動産業
+    {"p.f6_index": 16, "input_name": "g9" }, // 運輸通信
+    {"p.f6_index": 17, "input_name": "g10" }, // サービス業
+    {"p.f6_index": 18, "input_name": "g11" }, // 電気・ガス・水道・熱供給業
+    {"p.f6_index": 19, "input_name": "g12" } // 学校・団体
+  ];
 
-  var category;
-  element.all( by.css('p.f6')).get(categoryHash['金融保険業']['p.f6_index']).getText().then( function ( text ) {
-    category = text;
+  // 金融保険業のチェックボックスをチェックする
+  $('input[name=' + gyoshu_info[5]['input_name'] + ']').click();
+
+  /**
+   * 業種名
+   * @type {string}
+   */
+  var gyoshu;
+
+  // CSSセレクタを使って業種名を取得する
+  element.all( by.css('p.f6')).get(gyoshu_info[5]['p.f6_index']).getText().then( function ( text ) {
+    gyoshu = text;
   });
 
   $('input[name=submit]').click();
 
   var link, isLinkPresent;
   var result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu,
-    shihonkin, juugyouinSuu, gyoshu, eigyouNaiyou, jishaPr, url, bukai;
+    shihonkin, juugyouinSuu, gyoshu_shousai, eigyouNaiyou, jishaPr, url, bukai;
   var content;
 
   for (var j = 1; j <= 6; j++) {
-    (function ( index2 ) {
+    (function ( index_j ) {
       it('click next page link', function () {
-        if ( index2 != 1 ) {
-          $('a:nth-of-type(' + ( index2 - 1 ) + ')').click();
+        if ( index_j != 1 ) {
+          $('a:nth-of-type(' + ( index_j - 1 ) + ')').click();
         }
       })
 
@@ -88,7 +116,7 @@ describe( 'shokokaigisho', function () {
                 juugyouinSuu = text;
               });
               getTextFromTable('p', 20).then(function (text) {
-                gyoshu = text;
+                gyoshu_shousai = text;
               });
               getTextFromTable('p', 22).then(function (text) {
                 eigyouNaiyou = text;
@@ -108,12 +136,12 @@ describe( 'shokokaigisho', function () {
           it('save data', function () {
             if (isLinkPresent === true) {
               content = [
-                category, result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu, shihonkin,
-                juugyouinSuu, gyoshu, eigyouNaiyou, jishaPr, url, bukai
+                gyoshu, result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu, shihonkin,
+                juugyouinSuu, gyoshu_shousai, eigyouNaiyou, jishaPr, url, bukai
               ].join('\t') + '\n';
 
-              fs.appendFileSync(outFilePath, content);
-              console.log('wrote: ' + outFilePath);
+              fs.appendFileSync(out_file_path, content);
+              console.log('wrote: ' + out_file_path);
 
               browser.navigate().back();
             }
