@@ -5,6 +5,8 @@
  * 全ての事業所の情報を引き出すプログラムです
  */
 
+console.log('script just started');
+
 /**
  * ファイルシステムモジュール
  * @type {exports}
@@ -24,10 +26,15 @@ describe( '情報取得開始', function () {
   // AngularJSを使っていないサイトでProtractorを使用する
   browser.ignoreSynchronization = true;
 
-  // 商工会議所の事業所検索ページに行く
-  browser.get( 'http://meikan.yokkaichi-cci.or.jp/index.html' );
+  console.log('商工会議所に行く直前');
 
-    /**
+  browser.get( 'http://www.google.com' );
+
+  // 商工会議所の事業所検索ページに行く
+  //browser.get( 'http://meikan.yokkaichi-cci.or.jp/index.html');
+
+  console.log('商工会議所に行く、の直後')
+  /**
      * 業種リスト
      * p.f6_index: 検索画面の該当業種の業種名を取得するための番号
      * input_name: 検索画面の該当業種のチェックボックスの
@@ -116,6 +123,8 @@ describe( '情報取得開始', function () {
               $('.result_company').getText().then(function (text) {
                 result_company = text;
               });
+
+              console.log('事業者名：' + result_company);
 
               getTextFromTable('p', 6).then(function (text) {
                 shozaichi = text;

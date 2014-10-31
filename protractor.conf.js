@@ -2,6 +2,7 @@
  * Created by weed on 2014/10/22.
  */
 
+/*
 exports.config = {
   capabilities: {
     browserName: 'chrome',
@@ -28,3 +29,26 @@ exports.config = {
     });
   }
 }
+*/
+
+exports.config = {
+  allScriptsTimeout: 11000,
+
+  specs: [
+    '*.js'
+  ],
+
+  capabilities: {
+    'browserName': 'chrome'
+  },
+
+  chromeOnly: true,
+
+  baseUrl: 'http://localhost:8000/',
+
+  framework: 'jasmine',
+
+  jasmineNodeOpts: {
+    defaultTimeoutInterval: 30000
+  }
+};
