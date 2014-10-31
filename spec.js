@@ -1,5 +1,8 @@
 /**
  * Created by weed on 2014/10/22.
+ *
+ * 商工会議所の事業所検索ページから
+ * 全ての事業所の情報を引き出すプログラムです
  */
 
 /**
@@ -44,7 +47,7 @@ describe( '情報取得開始', function () {
     {"p.f6_index": 19, "input_name": "g12" } // 学校・団体
   ];
 
-  // 金融保険業のチェックボックスをチェックする
+  // 検索フォームの金融保険業のチェックボックスをチェックする
   $('input[name=' + gyoshu_info[5]['input_name'] + ']').click();
 
   /**
@@ -54,35 +57,55 @@ describe( '情報取得開始', function () {
   var gyoshu;
 
   // CSSセレクタを使って業種名を取得する
+  // 非同期なので.then(function)を使う
   element.all( by.css('p.f6')).get(gyoshu_info[5]['p.f6_index']).getText().then( function ( text ) {
     gyoshu = text;
   });
 
+  // 検索フォームの「検索」ボタンを押す
   $('input[name=submit]').click();
 
-  var link, isLinkPresent;
+  /**
+   * 事業所内容ページへのリンク
+   * @type {*|jQuery|HTMLElement}
+   */
+  var link;
+
+  /**
+   * 次の事業所内容ページへのリンクが存在するか
+   * @type {boolean}
+   */
+  var isLinkPresent = true;
+
+  /**
+   * @type {string}
+   */
   var result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu,
     shihonkin, juugyouinSuu, gyoshu_shousai, eigyouNaiyou, jishaPr, url, bukai;
   var content;
 
-  for (var j = 1; j <= 6; j++) {
-    (function ( index_j ) {
-      it('click next page link', function () {
-        if ( index_j != 1 ) {
-          $('a:nth-of-type(' + ( index_j - 1 ) + ')').click();
-        }
-      })
+  for (var j = 5; j <= 6; j++) {
+    (function ( page_number ) {
+      // 1ページの内容全てを取得し終わったら次のページへ進む
 
-      for (var i = 1; i <= 20; i++) {
-        (function (index) {
-          it('Open first company page and scrape data', function () {
+      it('次のページへ進む', function () {
+        if ( page_number != 1 ) {
+          $('a:nth-of-type(' + ( page_number - 1 ) + ')').click();
+        }
+      });
+
+      // 1つの事業所の情報を取得したら次の事業所へ進む
+      // 1ページに含まれる事業所数は最大20
+      for (var i = 1; isLinkPresent; i++) {
+        (function ( index ) {
+          it('次の事業所があるか調べる', function () {
             link = $('div#search_result_list:nth-of-type(' + ( index + 1 ) + ') a:nth-of-type(1)');
-            link.isPresent().then(function (b) {
-              isLinkPresent = b;
+            link.isPresent().then( function (bool) {
+              isLinkPresent = bool;
             });
           });
 
-          it('hoge', function () {
+          it('事業所内容を取得する', function () {
             if (isLinkPresent === true) {
               link.click();
 
@@ -131,6 +154,10 @@ describe( '情報取得開始', function () {
                 bukai = text;
               });
             } // if
+            else
+            {
+              return; // breakだとなぜかエラーが出て止まる
+            }
           });
 
           it('save data', function () {
@@ -148,6 +175,14 @@ describe( '情報取得開始', function () {
           });
         })(i); // (function
       } // for i
+
+      it('このページの情報取得を完了しました', function () {
+      });
+
     })(j); // (function
   } // for j
+
+  it('全ページの情報取得を完了しました', function () {
+  })
+
 }); // describe
