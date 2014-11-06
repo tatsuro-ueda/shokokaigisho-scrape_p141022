@@ -28,9 +28,9 @@ describe( '情報取得', function () {
    * 出力ファイルの1行目のヘッダー
    * @type {string}
    */
-  var header = "業種\t企業名\t所在地\t電話番号\t代表者\t創業年月\t法人設立年月\t資本金\t従業員数\t" +
-    "業種詳細\t営業内容\t自社PR\tURL\t部会\n";
-  fs.appendFileSync(out_file_path, header);
+  //var header = "業種\t企業名\t所在地\t電話番号\t代表者\t創業年月\t法人設立年月\t資本金\t従業員数\t" +
+  //  "業種詳細\t営業内容\t自社PR\tURL\t部会\n";
+  //fs.appendFileSync(out_file_path, header);
 
   /**
    * 業種名
@@ -64,12 +64,12 @@ describe( '情報取得', function () {
       {"p.f6_index": 18, "input_name": "g11"}, // 9 電気・ガス・水道・熱供給業
       {"p.f6_index": 19, "input_name": "g12"} // 10 学校・団体
     ];
-
+    var gyoshuInfoIndex = 3;
     // 検索フォームの金融保険業のチェックボックスをチェックする
-    $('input[name=' + gyoshu_info[1]['input_name'] + ']').click();
+    $('input[name=' + gyoshu_info[gyoshuInfoIndex]['input_name'] + ']').click();
     // CSSセレクタを使って業種名を取得する
     // 非同期なので.then(function)を使う
-    element.all(by.css('p.f6')).get(gyoshu_info[1]['p.f6_index']).getText().then(function (text) {
+    element.all(by.css('p.f6')).get(gyoshu_info[gyoshuInfoIndex]['p.f6_index']).getText().then(function (text) {
       gyoshu = text;
     });
 
@@ -85,15 +85,23 @@ describe( '情報取得', function () {
         if ( page_number === 1 ) {
           // 最初のページではページ番号へのリンクをクリックしない
         }
-        else if ( (page_number % 20) === 0 ) {
-          $('a:nth-of-type(' + (page_number - 1) + ')').click();
-        }
-        else if ( (page_number % 20) === 1 ) {
+        //else if ( page_number === 40 ) {
+        //  $('a:nth-of-type(20)').click();
+        //  $('a:nth-of-type(20)').click();
+        //}
+        // ページ番号が21のとき
+        else if ( page_number  === 21 ) {
           $('a:nth-of-type(1)').click();
         }
+        // ページ番号が41, 61, 81のとき
+        else if ( (page_number % 20) === 1) {
+          $('a:nth-of-type(2)').click();
+        }
+        // ページ番号が1〜20のとき
         else if ( page_number <= 20 ) {
           $('a:nth-of-type(' + (page_number - 1) + ')').click();
         }
+        // ページ番号が22〜のとき
         else {
           $('a:nth-of-type(' + (page_number % 20) + ')').click();
         }
