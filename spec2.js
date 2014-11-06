@@ -17,12 +17,20 @@ describe( '情報取得', function () {
   var fs = require( 'fs' );
 
   /**
-   * 出力ファイル
+   * 出力ファイル名
    * @type {string}
    */
-  var out_file_path = 'tmp.tsv';
+  var out_file_path = 'result.tsv';
 
   fs.unlink(out_file_path);
+
+  /**
+   * 出力ファイルの1行目のヘッダー
+   * @type {string}
+   */
+  var header = "業種\t企業名\t所在地\t電話番号\t代表者\t創業年月\t法人設立年月\t資本金\t従業員数\t" +
+    "業種詳細\t営業内容\t自社PR\tURL\t部会\n";
+  fs.appendFileSync(out_file_path, header);
 
   /**
    * 業種名
@@ -44,55 +52,47 @@ describe( '情報取得', function () {
      * @type {*[]}
      */
     var gyoshu_info = [
-      {"p.f6_index": 8, "input_name": "g1"}, // 農林水産業
-      {"p.f6_index": 10, "input_name": "g3"}, // 建設業
-      {"p.f6_index": 11, "input_name": "g4"}, // 製造業
-      {"p.f6_index": 12, "input_name": "g5"}, // 卸売業
-      {"p.f6_index": 13, "input_name": "g6"}, // 小売業
-      {"p.f6_index": 14, "input_name": "g7"}, // 金融保険業
-      {"p.f6_index": 15, "input_name": "g8"}, // 不動産業
-      {"p.f6_index": 16, "input_name": "g9"}, // 運輸通信
-      {"p.f6_index": 17, "input_name": "g10"}, // サービス業
-      {"p.f6_index": 18, "input_name": "g11"}, // 電気・ガス・水道・熱供給業
-      {"p.f6_index": 19, "input_name": "g12"} // 学校・団体
+      {"p.f6_index": 8, "input_name": "g1"}, // 0 農林水産業
+      {"p.f6_index": 10, "input_name": "g3"}, // 1 建設業
+      {"p.f6_index": 11, "input_name": "g4"}, // 2 製造業
+      {"p.f6_index": 12, "input_name": "g5"}, // 3 卸売業
+      {"p.f6_index": 13, "input_name": "g6"}, // 4 小売業
+      {"p.f6_index": 14, "input_name": "g7"}, // 5 金融保険業
+      {"p.f6_index": 15, "input_name": "g8"}, // 6 不動産業
+      {"p.f6_index": 16, "input_name": "g9"}, // 7 運輸通信
+      {"p.f6_index": 17, "input_name": "g10"}, // 8 サービス業
+      {"p.f6_index": 18, "input_name": "g11"}, // 9 電気・ガス・水道・熱供給業
+      {"p.f6_index": 19, "input_name": "g12"} // 10 学校・団体
     ];
 
     // 検索フォームの金融保険業のチェックボックスをチェックする
-    $('input[name=' + gyoshu_info[5]['input_name'] + ']').click();
+    $('input[name=' + gyoshu_info[1]['input_name'] + ']').click();
     // CSSセレクタを使って業種名を取得する
-
     // 非同期なので.then(function)を使う
-    element.all(by.css('p.f6')).get(gyoshu_info[5]['p.f6_index']).getText().then(function (text) {
+    element.all(by.css('p.f6')).get(gyoshu_info[1]['p.f6_index']).getText().then(function (text) {
       gyoshu = text;
     });
-
-    var header = "業種\t企業名\t所在地\t電話番号\t代表者\t創業年月\t法人設立年月\t資本金\t従業員数\t" +
-      "業種詳細\t営業内容\t自社PR\tURL\t部会\n";
-    fs.appendFileSync(out_file_path, header);
 
     // 検索フォームの「検索」ボタンを押す
     $('input[name=submit]').click();
   });
 
-  /**
-   * 事業所内容ページへのリンク
-   * @type {*|jQuery|HTMLElement}
-   */
-  var link;
-
-  /**
-   * 次の事業所内容ページへのリンクが存在するか
-   * @type {boolean}
-   */
-  var isLinkPresent = true;
-
-  for (var j = 1; j <= 1; j++) {
+  for (var j = 1; j <= 500; j++) {
     (function ( page_number ) {
       // 1ページの内容全てを取得し終わったら次のページへ進む
 
       it('次のページへ進む', function () {
-        if ( page_number != 1 ) {
-          $('a:nth-of-type(' + ( page_number - 1 ) + ')').click();
+        if ( page_number === 1 ) {
+          // 最初のページではページ番号へのリンクをクリックしない
+        }
+        else if ( (page_number % 20) === 0 ) {
+          $('a:nth-of-type(' + (page_number - 1) + ')').click();
+        }
+        else if ( (page_number % 20) === 1 ) {
+          $('a:nth-of-type(1)').click();
+        }
+        else {
+          $('a:nth-of-type(' + (page_number % 20) + ')').click();
         }
       });
 
@@ -101,6 +101,18 @@ describe( '情報取得', function () {
       //for (var i = 1; isLinkPresent; i++) {
       for (var i = 1; i <= 20; i++) {
         (function (index) {
+
+          /**
+           * 事業所内容ページへのリンク
+           * @type {*|jQuery|HTMLElement}
+           */
+          var link;
+
+          /**
+           * 次の事業所内容ページへのリンクが存在するか
+           * @type {boolean}
+           */
+          var isLinkPresent = true;
 
           it('次の事業所があるか調べる', function () {
             link = $('div#search_result_list:nth-of-type(' + ( index + 1 ) + ') a:nth-of-type(1)');
@@ -119,9 +131,9 @@ describe( '情報取得', function () {
             if ( isLinkPresent ) {
               link.click();
 
-              var getTextFromTable = function (selector, index) {
+              function getTextFromTable (selector, index) {
                 return element.all(by.css(selector)).get(index).getText();
-              };
+              }
 
               /**
                * 各企業情報を取得する
