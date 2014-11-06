@@ -15,7 +15,9 @@
 <script>hljs.initHighlightingOnLoad();</script>
 
     <link href="css/style.css" rel="stylesheet" />
-<link href='http://fonts.googleapis.com/css?family=Ultra' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,800italic,300,400,800' rel='stylesheet' type='text/css'>    
+
+
   </head>
 
   <body>
@@ -26,11 +28,108 @@
     <div id="impress">
     <div class='step' >
     
-<h1>受け入れテストツール</h1>
+<h2>受け入れテストツール</h2>
 
-<h1>Protractor / Angularで</h1>
+<h2>Protractor / Angular</h2>
 
-<h1>スクレイピング</h1>
+<h2>でスクレイピング</h2>
+</div>
+      <div class='step' >
+    
+<h2>Protractorって何？</h2>
+
+<p><img src="image/protractor.png" alt=""></p>
+
+<ul>
+<li>日本語で「分度器」</li>
+<li>AngularJSに付属している受け入れテストツール</li>
+<li>AngularJSを使ってない普通のサイトでも使用可能</li>
+<li>内部でSeleniumを使用</li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>どんなふうに使うの？</h2>
+</div>
+      <div class='step' >
+    
+<h2>こんなサイトがあるとします</h2>
+
+<p>足し算をするサイト</p>
+
+<p><img src="image/calculator.jpg" alt=""></p>
+</div>
+      <div class='step' >
+    
+<h2>受け入れテストは、こんな感じ</h2>
+
+<ul>
+<li>1つめのボックスに「1」を入力し、</li>
+<li>2つめのボックスに「2」を入力すると・・・</li>
+<li>「3」が出力されるはず </li>
+</ul>
+</div>
+      <div class='step' >
+    
+<pre style="background:#0c1021;color:#f8f8f8">describe(<span style="color:#61ce3c">'AngularJSホームページ'</span>, <span style="color:#fbde2d">function</span>() {
+  it(<span style="color:#61ce3c">'1と2を加える'</span>, <span style="color:#fbde2d">function</span>() {
+    <span style="color:#aeaeae">// 足し算をするサイト</span>
+    browser.get(<span style="color:#61ce3c">'http://juliemr.github.io/protractor-demo/'</span>);
+    element(by.model(<span style="color:#61ce3c">'first'</span>)).sendKeys(<span style="color:#d8fa3c">1</span>);
+    element(by.model(<span style="color:#61ce3c">'second'</span>)).sendKeys(<span style="color:#d8fa3c">2</span>);
+
+    element(by.<span style="color:#8da6ce">id</span>(<span style="color:#61ce3c">'gobutton'</span>)).<span style="color:#8da6ce">click</span>();
+
+    <span style="color:#aeaeae">// 1と2を足したら結果は3になるはず、というテスト</span>
+    expect(element(by.binding(<span style="color:#61ce3c">'latest'</span>)).getText()).toEqual(<span style="color:#61ce3c">'3'</span>);
+  });
+});
+</pre>
+</div>
+      <div class='step' >
+    
+<ul>
+<li>このテストコードで実際にブラウザが起ち上がってテストをします</li>
+<li>ヘッドレスではないので、テストの過程がわかりやすいです</li>
+</ul>
+
+<h2>このテストツールを使って</h2>
+
+<h2>スクレイピングしてしまう、</h2>
+
+<h2>というのが今回の発表内容です</h2>
+</div>
+      <div class='step' >
+    
+<h2>目的</h2>
+
+<p>とある商工会議所の事業所検索ページから、</p>
+
+<p><strong>全ての事業所の情報</strong>を引き出す</p>
+</div>
+      <div class='step' >
+    
+<pre style="background:#0c1021;color:#f8f8f8">  it(<span style="color:#61ce3c">'目標業種のページへ行く'</span>, <span style="color:#fbde2d">function</span> () {
+
+    <span style="color:#aeaeae">// 商工会議所の事業所検索ページに行く</span>
+    browser.get(<span style="color:#61ce3c">'http://meikan.yokkaichi-cci.or.jp/index.html'</span>);
+
+    <span style="color:#aeaeae">// 検索フォームの金融保険業のチェックボックスをチェックする</span>
+    <span style="color:#fbde2d">$</span>(<span style="color:#61ce3c">'input[name=g3]'</span>).<span style="color:#8da6ce">click</span>();
+
+    <span style="color:#aeaeae">// 検索フォームの「検索」ボタンを押す</span>
+    <span style="color:#fbde2d">$</span>(<span style="color:#61ce3c">'input[name=submit]'</span>).<span style="color:#8da6ce">click</span>();
+  });
+</pre>
+</div>
+      <div class='step' >
+    
+<pre style="background:#0c1021;color:#f8f8f8">it(<span style="color:#61ce3c">'次のページへ進む'</span>, <span style="color:#fbde2d">function</span> () {
+  <span style="color:#fbde2d">$</span>(<span style="color:#61ce3c">'a:nth-of-type('</span> <span style="color:#fbde2d">+</span> (page_number <span style="color:#fbde2d">%</span> <span style="color:#d8fa3c">20</span>) <span style="color:#fbde2d">+</span> <span style="color:#61ce3c">')'</span>).<span style="color:#8da6ce">click</span>();
+  <span style="color:#aeaeae">// 例えば15ページ目に行くには</span>
+  <span style="color:#aeaeae">// $('a:nth-of-type(15).click()</span>
+}
+</pre>
 
       </div>
     <script src="js/impress.js"></script>

@@ -38,7 +38,7 @@ describe( '情報取得', function () {
    */
   var gyoshu;
 
-  it('金融保険業のページへ行く', function () {
+  it('目標業種のページへ行く', function () {
     // AngularJSを使っていないサイトでProtractorを使用する
     browser.ignoreSynchronization = true;
 
@@ -64,7 +64,7 @@ describe( '情報取得', function () {
       {"p.f6_index": 18, "input_name": "g11"}, // 9 電気・ガス・水道・熱供給業
       {"p.f6_index": 19, "input_name": "g12"} // 10 学校・団体
     ];
-    var gyoshuInfoIndex = 3;
+    var gyoshuInfoIndex = 10;
     // 検索フォームの金融保険業のチェックボックスをチェックする
     $('input[name=' + gyoshu_info[gyoshuInfoIndex]['input_name'] + ']').click();
     // CSSセレクタを使って業種名を取得する
