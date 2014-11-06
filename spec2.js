@@ -91,6 +91,9 @@ describe( '情報取得', function () {
         else if ( (page_number % 20) === 1 ) {
           $('a:nth-of-type(1)').click();
         }
+        else if ( page_number <= 20 ) {
+          $('a:nth-of-type(' + (page_number - 1) + ')').click();
+        }
         else {
           $('a:nth-of-type(' + (page_number % 20) + ')').click();
         }
