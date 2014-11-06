@@ -1,32 +1,41 @@
 /**
+ * Created by weed on 2014/11/06.
+ */
+/**
  * Created by weed on 2014/10/22.
  *
  * 商工会議所の事業所検索ページから
  * 全ての事業所の情報を引き出すプログラムです
  */
 
-/**
- * ファイルシステムモジュール
- * @type {exports}
- */
-var fs = require( 'fs' );
-
-/**
- * 出力ファイル
- * @type {string}
- */
-var out_file_path = 'tmp.csv';
-
-fs.unlink(out_file_path);
-
 describe( '情報取得', function () {
 
-  it ('金融保険業のページへ行く', function () {
+  /**
+   * ファイルシステムモジュール
+   * @type {exports}
+   */
+  var fs = require( 'fs' );
+
+  /**
+   * 出力ファイル
+   * @type {string}
+   */
+  var out_file_path = 'tmp.csv';
+
+  fs.unlink(out_file_path);
+
+  /**
+   * 業種名
+   * @type {string}
+   */
+  var gyoshu;
+
+  it('金融保険業のページへ行く', function () {
     // AngularJSを使っていないサイトでProtractorを使用する
     browser.ignoreSynchronization = true;
 
     // 商工会議所の事業所検索ページに行く
-    browser.get( 'http://meikan.yokkaichi-cci.or.jp/index.html' );
+    browser.get('http://meikan.yokkaichi-cci.or.jp/index.html');
 
     /**
      * 業種リスト
@@ -35,40 +44,31 @@ describe( '情報取得', function () {
      * @type {*[]}
      */
     var gyoshu_info = [
-      {"p.f6_index": 8, "input_name": "g1" }, // 農林水産業
-      {"p.f6_index": 10, "input_name": "g3" }, // 建設業
-      {"p.f6_index": 11, "input_name": "g4" }, // 製造業
-      {"p.f6_index": 12, "input_name": "g5" }, // 卸売業
-      {"p.f6_index": 13, "input_name": "g6" }, // 小売業
-      {"p.f6_index": 14, "input_name": "g7" }, // 金融保険業
-      {"p.f6_index": 15, "input_name": "g8" }, // 不動産業
-      {"p.f6_index": 16, "input_name": "g9" }, // 運輸通信
-      {"p.f6_index": 17, "input_name": "g10" }, // サービス業
-      {"p.f6_index": 18, "input_name": "g11" }, // 電気・ガス・水道・熱供給業
-      {"p.f6_index": 19, "input_name": "g12" } // 学校・団体
+      {"p.f6_index": 8, "input_name": "g1"}, // 農林水産業
+      {"p.f6_index": 10, "input_name": "g3"}, // 建設業
+      {"p.f6_index": 11, "input_name": "g4"}, // 製造業
+      {"p.f6_index": 12, "input_name": "g5"}, // 卸売業
+      {"p.f6_index": 13, "input_name": "g6"}, // 小売業
+      {"p.f6_index": 14, "input_name": "g7"}, // 金融保険業
+      {"p.f6_index": 15, "input_name": "g8"}, // 不動産業
+      {"p.f6_index": 16, "input_name": "g9"}, // 運輸通信
+      {"p.f6_index": 17, "input_name": "g10"}, // サービス業
+      {"p.f6_index": 18, "input_name": "g11"}, // 電気・ガス・水道・熱供給業
+      {"p.f6_index": 19, "input_name": "g12"} // 学校・団体
     ];
 
     // 検索フォームの金融保険業のチェックボックスをチェックする
     $('input[name=' + gyoshu_info[5]['input_name'] + ']').click();
     // CSSセレクタを使って業種名を取得する
 
-    /**
-     * 業種名
-     * @type {string}
-     */
-    var gyoshu;
-
     // 非同期なので.then(function)を使う
-    element.all( by.css('p.f6')).get(gyoshu_info[5]['p.f6_index']).getText().then( function ( text ) {
+    element.all(by.css('p.f6')).get(gyoshu_info[5]['p.f6_index']).getText().then(function (text) {
       gyoshu = text;
     });
 
     // 検索フォームの「検索」ボタンを押す
     $('input[name=submit]').click();
-
-    browser.sleep(100000);
   });
-
 
   /**
    * 事業所内容ページへのリンク
@@ -82,13 +82,6 @@ describe( '情報取得', function () {
    */
   var isLinkPresent = true;
 
-  /**
-   * @type {string}
-   */
-  var result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu,
-    shihonkin, juugyouinSuu, gyoshu_shousai, eigyouNaiyou, jishaPr, url, bukai;
-  var content;
-
   for (var j = 5; j <= 6; j++) {
     (function ( page_number ) {
       // 1ページの内容全てを取得し終わったら次のページへ進む
@@ -101,17 +94,26 @@ describe( '情報取得', function () {
 
       // 1つの事業所の情報を取得したら次の事業所へ進む
       // 1ページに含まれる事業所数は最大20
-      for (var i = 1; isLinkPresent; i++) {
-        (function ( index ) {
+      //for (var i = 1; isLinkPresent; i++) {
+      for (var i = 1; i <= 20; i++) {
+        (function (index) {
+      //  var index = 1;
+
           it('次の事業所があるか調べる', function () {
             link = $('div#search_result_list:nth-of-type(' + ( index + 1 ) + ') a:nth-of-type(1)');
-            link.isPresent().then( function (bool) {
+            link.isPresent().then(function (bool) {
               isLinkPresent = bool;
             });
           });
 
+          /**
+           * @type {string}
+           */
+          var result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu,
+            shihonkin, juugyouinSuu, gyoshu_shousai, eigyouNaiyou, jishaPr, url, bukai;
+
           it('事業所内容を取得する', function () {
-            if (isLinkPresent === true) {
+            if ( isLinkPresent ) {
               link.click();
 
               var getTextFromTable = function (selector, index) {
@@ -119,23 +121,22 @@ describe( '情報取得', function () {
               };
 
               $('.result_company').getText().then(function (text) {
-                result_company = text;
+                result_company = result_company === null ? '' : text;
               });
-
               getTextFromTable('p', 6).then(function (text) {
-                shozaichi = text;
+                shozaichi = shozaichi === null ? '' : text;
               });
               getTextFromTable('p', 8).then(function (text) {
-                denwaBango = text;
+                denwaBango = denwaBango === null ? '' : text;
               });
               getTextFromTable('p', 10).then(function (text) {
-                daihyoSha = text;
+                daihyoSha = daihyoSha === null ? '' : text;
               });
               getTextFromTable('p', 12).then(function (text) {
-                sougyouNengetsu = text;
+                sougyouNengetsu = sougyouNengetsu === null ? '' : text;
               });
               getTextFromTable('p', 14).then(function (text) {
-                houjinSetsuritsuNengetsu = text;
+                houjinSetsuritsuNengetsu = houjinSetsuritsuNengetsu === null ? '' : text;
               });
               getTextFromTable('p', 16).then(function (text) {
                 shihonkin = text;
@@ -159,15 +160,18 @@ describe( '情報取得', function () {
                 bukai = text;
               });
             } // if
-            else
-            {
+            else {
               return; // breakだとなぜかエラーが出て止まる
             }
           });
 
           it('save data', function () {
             if (isLinkPresent === true) {
-              content = [
+              /**
+               * 全ての事業所データを連結したもの
+               * @type {string}
+               */
+              var content = [
                 gyoshu, result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu, shihonkin,
                 juugyouinSuu, gyoshu_shousai, eigyouNaiyou, jishaPr, url, bukai
               ].join('\t') + '\n';
@@ -178,16 +182,12 @@ describe( '情報取得', function () {
               browser.navigate().back();
             }
           });
-        })(i); // (function
+        })(i);
       } // for i
-
-      it('このページの情報取得を完了しました', function () {
-      });
-
     })(j); // (function
   } // for j
 
-  it('全ページの情報取得を完了しました', function () {
+  it ('', function () {
+    browser.sleep(100000);
   })
-
-}); // describe
+});

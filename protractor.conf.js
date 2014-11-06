@@ -10,13 +10,13 @@ exports.config = {
     }
   },
 
-  specs: ['*.js'],
+  specs: ['spec2.js'],
 
   jasmineNodeOpts: {
     isVerbose: true,
     showColors: true,
     defaultTimeoutInterval: 30000,
-    includeStackTrace: false
+    includeStackTrace: true
   },
 
   onPrepare: function () {

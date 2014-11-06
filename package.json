@@ -5,8 +5,8 @@
   "main": "index.js",
   "repository": "git@github.com:weed/shokokaigisho-scrape_p141022.git",
   "scripts": {
-    "postinstall": "$(npm bin)/webdriver-manager update",
-    "scrape": "$(npm bin)/protractor --specs spec.js"
+    "test": "$(npm bin)/protractor",
+    "postinstall": "$(npm bin)/webdriver-manager update"
   },
   "author": "ueda.tatsuro@gmail.com",
   "license": "ISC",
