@@ -2,3 +2,4 @@ node_modules
 npm-debug.log
 .idea
 tmp.csv
+tmp.tsv

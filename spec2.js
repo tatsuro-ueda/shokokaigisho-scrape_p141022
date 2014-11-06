@@ -20,7 +20,7 @@ describe( '情報取得', function () {
    * 出力ファイル
    * @type {string}
    */
-  var out_file_path = 'tmp.csv';
+  var out_file_path = 'tmp.tsv';
 
   fs.unlink(out_file_path);
 
@@ -66,6 +66,10 @@ describe( '情報取得', function () {
       gyoshu = text;
     });
 
+    var header = "業種\t企業名\t所在地\t電話番号\t代表者\t創業年月\t法人設立年月\t資本金\t従業員数\t" +
+      "業種詳細\t営業内容\t自社PR\tURL\t部会\n";
+    fs.appendFileSync(out_file_path, header);
+
     // 検索フォームの「検索」ボタンを押す
     $('input[name=submit]').click();
   });
@@ -82,7 +86,7 @@ describe( '情報取得', function () {
    */
   var isLinkPresent = true;
 
-  for (var j = 5; j <= 6; j++) {
+  for (var j = 1; j <= 1; j++) {
     (function ( page_number ) {
       // 1ページの内容全てを取得し終わったら次のページへ進む
 
@@ -97,7 +101,6 @@ describe( '情報取得', function () {
       //for (var i = 1; isLinkPresent; i++) {
       for (var i = 1; i <= 20; i++) {
         (function (index) {
-      //  var index = 1;
 
           it('次の事業所があるか調べる', function () {
             link = $('div#search_result_list:nth-of-type(' + ( index + 1 ) + ') a:nth-of-type(1)');
@@ -110,7 +113,7 @@ describe( '情報取得', function () {
            * @type {string}
            */
           var result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu,
-            shihonkin, juugyouinSuu, gyoshu_shousai, eigyouNaiyou, jishaPr, url, bukai;
+            shihonkin, juugyouinSuu, gyoshuShousai, eigyouNaiyou, jishaPr, url, bukai;
 
           it('事業所内容を取得する', function () {
             if ( isLinkPresent ) {
@@ -120,6 +123,10 @@ describe( '情報取得', function () {
                 return element.all(by.css(selector)).get(index).getText();
               };
 
+              /**
+               * 各企業情報を取得する
+               * 空白の場合は空文字列''を入れる
+               */
               $('.result_company').getText().then(function (text) {
                 result_company = result_company === null ? '' : text;
               });
@@ -139,25 +146,25 @@ describe( '情報取得', function () {
                 houjinSetsuritsuNengetsu = houjinSetsuritsuNengetsu === null ? '' : text;
               });
               getTextFromTable('p', 16).then(function (text) {
-                shihonkin = text;
+                shihonkin = shihonkin === null ? '' : text;
               });
               getTextFromTable('p', 18).then(function (text) {
-                juugyouinSuu = text;
+                juugyouinSuu = juugyouinSuu === null ? '' : text;
               });
               getTextFromTable('p', 20).then(function (text) {
-                gyoshu_shousai = text;
+                gyoshuShousai = gyoshuShousai === null ? '' : text;
               });
               getTextFromTable('p', 22).then(function (text) {
-                eigyouNaiyou = text;
+                eigyouNaiyou = eigyouNaiyou === null ? '' : text;
               });
               getTextFromTable('p', 24).then(function (text) {
-                jishaPr = text;
+                jishaPr = jishaPr === null ? '' : text;
               });
               getTextFromTable('a', 2).then(function (text) {
-                url = text;
+                url = url === null ? '' : text;
               });
               getTextFromTable('p', 28).then(function (text) {
-                bukai = text;
+                bukai = bukai === null ? '' : text;
               });
             } // if
             else {
@@ -173,7 +180,7 @@ describe( '情報取得', function () {
                */
               var content = [
                 gyoshu, result_company, shozaichi, denwaBango, daihyoSha, sougyouNengetsu, houjinSetsuritsuNengetsu, shihonkin,
-                juugyouinSuu, gyoshu_shousai, eigyouNaiyou, jishaPr, url, bukai
+                juugyouinSuu, gyoshuShousai, eigyouNaiyou, jishaPr, url, bukai
               ].join('\t') + '\n';
 
               fs.appendFileSync(out_file_path, content);
